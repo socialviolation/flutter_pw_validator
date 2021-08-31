@@ -12,26 +12,20 @@ import 'Resource/MyColors.dart';
 class FlutterPwValidator extends StatefulWidget {
   final int minLength, uppercaseCharCount, numericCharCount, specialCharCount;
   final Color defaultColor, successColor, failureColor;
-  final double width, height;
   final Function onSuccess;
   final TextEditingController controller;
 
-  FlutterPwValidator(
-      {required this.width,
-      required this.height,
-      required this.minLength,
-      required this.onSuccess,
-      required this.controller,
-      this.uppercaseCharCount = 0,
-      this.numericCharCount = 0,
-      this.specialCharCount = 0,
-      this.defaultColor = MyColors.gray,
-      this.successColor = MyColors.green,
-      this.failureColor = MyColors.red}) {
-    //Initial entered size for global use
-    SizeConfig.width = width;
-    SizeConfig.height = height;
-  }
+  FlutterPwValidator({
+    required this.minLength,
+    required this.onSuccess,
+    required this.controller,
+    this.uppercaseCharCount = 0,
+    this.numericCharCount = 0,
+    this.specialCharCount = 0,
+    this.defaultColor = MyColors.gray,
+    this.successColor = MyColors.green,
+    this.failureColor = MyColors.red,
+  });
 
   @override
   State<StatefulWidget> createState() => new _FlutterPwValidatorState();
@@ -116,58 +110,59 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      width: SizeConfig.width,
-      height: widget.height,
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          new Flexible(
-            flex: 3,
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Iterate through the conditions map values to check if there is any true values then create green ValidationBarComponent.
-                for (bool value in conditionsHelper.getter()!.values)
-                  if (value == true)
-                    new ValidationBarComponent(color: widget.successColor),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          flex: 3,
+          fit: FlexFit.loose,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Iterate through the conditions map values to check if there is any true values then create green ValidationBarComponent.
+              for (bool value in conditionsHelper.getter()!.values)
+                if (value == true)
+                  ValidationBarComponent(color: widget.successColor),
 
-                // Iterate through the conditions map values to check if there is any false values then create red ValidationBarComponent.
-                for (bool value in conditionsHelper.getter()!.values)
-                  if (value == false)
-                    new ValidationBarComponent(color: widget.defaultColor)
-              ],
-            ),
+              // Iterate through the conditions map values to check if there is any false values then create red ValidationBarComponent.
+              for (bool value in conditionsHelper.getter()!.values)
+                if (value == false)
+                  ValidationBarComponent(color: widget.defaultColor)
+            ],
           ),
-          new Flexible(
-            flex: 7,
-            child: new Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+        SizedBox(height: 4),
+        Flexible(
+          flex: 7,
+          fit: FlexFit.loose,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                //Iterate through the condition map entries and generate new ValidationTextWidget for each item in Green or Red Color
-                children: conditionsHelper.getter()!.entries.map((entry) {
-                  int? value;
-                  if (entry.key == Strings.AT_LEAST) value = widget.minLength;
-                  if (entry.key == Strings.UPPERCASE_LETTER)
-                    value = widget.uppercaseCharCount;
-                  if (entry.key == Strings.NUMERIC_CHARACTER)
-                    value = widget.numericCharCount;
-                  if (entry.key == Strings.SPECIAL_CHARACTER)
-                    value = widget.specialCharCount;
-                  return new ValidationTextWidget(
-                    color: isFirstRun
-                        ? widget.defaultColor
-                        : entry.value
-                            ? widget.successColor
-                            : widget.failureColor,
-                    text: entry.key,
-                    value: value,
-                  );
-                }).toList()),
-          )
-        ],
-      ),
+              //Iterate through the condition map entries and generate new ValidationTextWidget for each item in Green or Red Color
+              children: conditionsHelper.getter()!.entries.map((entry) {
+                int? value;
+                if (entry.key == Strings.AT_LEAST) value = widget.minLength;
+                if (entry.key == Strings.UPPERCASE_LETTER)
+                  value = widget.uppercaseCharCount;
+                if (entry.key == Strings.NUMERIC_CHARACTER)
+                  value = widget.numericCharCount;
+                if (entry.key == Strings.SPECIAL_CHARACTER)
+                  value = widget.specialCharCount;
+                return ValidationTextWidget(
+                  color: isFirstRun
+                      ? widget.defaultColor
+                      : entry.value
+                      ? widget.successColor
+                      : widget.failureColor,
+                  text: entry.key,
+                  value: value,
+                );
+              }).toList()),
+        )
+      ],
     );
   }
 }
