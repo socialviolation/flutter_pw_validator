@@ -6,7 +6,11 @@ class ValidationTextWidget extends StatelessWidget {
   final String text;
   final int? value;
 
-  ValidationTextWidget({required this.color, required this.text, required this.value});
+  ValidationTextWidget({
+    required this.color,
+    required this.text,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {

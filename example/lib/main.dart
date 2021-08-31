@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
 
 class AppHome extends StatelessWidget {
   final TextEditingController controller = new TextEditingController();
+  final FocusNode focus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +44,11 @@ class AppHome extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 2.0),
                     child: new TextField(
-                        controller: controller,
-                        decoration: new InputDecoration(
-                            hintText: "Password",
-                            border: new OutlineInputBorder(
-                                borderSide: BorderSide()))),
+                      controller: controller,
+                      focusNode: focus,
+                      decoration: new InputDecoration(
+                          hintText: "Password", border: new OutlineInputBorder(borderSide: BorderSide())),
+                    ),
                   ),
                   new SizedBox(
                     height: 5,
@@ -58,12 +59,11 @@ class AppHome extends StatelessWidget {
                     uppercaseCharCount: 2,
                     numericCharCount: 3,
                     specialCharCount: 1,
-                    // width: 400,
-                    // height: 150,
+                    hideWhileInactive: true,
+                    focusNode: focus,
                     onSuccess: () {
                       print("Matched");
-                      Scaffold.of(context).showSnackBar(new SnackBar(
-                          content: new Text("Password is matched")));
+                      Scaffold.of(context).showSnackBar(new SnackBar(content: new Text("Password is matched")));
                     },
                   ),
                 ],
