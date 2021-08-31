@@ -1,7 +1,5 @@
 library flutter_pw_validator;
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_pw_validator/Utilities/ConditionsHelper.dart';
 import 'package:flutter_pw_validator/Utilities/Validator.dart';
@@ -19,20 +17,19 @@ class FlutterPwValidator extends StatefulWidget {
   final FocusNode? focusNode;
   final Duration? duration;
 
-  FlutterPwValidator({
-    required this.minLength,
-    required this.onSuccess,
-    required this.controller,
-    this.uppercaseCharCount = 0,
-    this.numericCharCount = 0,
-    this.specialCharCount = 0,
-    this.defaultColor = MyColors.gray,
-    this.successColor = MyColors.green,
-    this.failureColor = MyColors.red,
-    this.hideWhileInactive = false,
-    this.focusNode,
-    this.duration = const Duration(milliseconds: 500)
-  });
+  FlutterPwValidator(
+      {required this.minLength,
+      required this.onSuccess,
+      required this.controller,
+      this.uppercaseCharCount = 0,
+      this.numericCharCount = 0,
+      this.specialCharCount = 0,
+      this.defaultColor = MyColors.gray,
+      this.successColor = MyColors.green,
+      this.failureColor = MyColors.red,
+      this.hideWhileInactive = false,
+      this.focusNode,
+      this.duration = const Duration(milliseconds: 500)});
 
   @override
   State<StatefulWidget> createState() => new _FlutterPwValidatorState();
@@ -47,7 +44,6 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> with SingleTick
 
   //Initial instances of ConditionHelper and Validator class
   ConditionsHelper conditionsHelper = new ConditionsHelper();
-  Validator validator = new Validator();
   late AnimationController expandController;
   late Animation<double> yAnimation;
 
@@ -55,15 +51,15 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> with SingleTick
   void validate() {
     /// For each condition we called validators and get their new state
     hasMinLength = conditionsHelper.checkCondition(
-        widget.minLength, validator.hasMinLength, widget.controller, Strings.min(widget.minLength), hasMinLength);
+        widget.minLength, Validator.hasMinLength, widget.controller, Strings.min(widget.minLength), hasMinLength);
 
-    hasMinUppercaseChar = conditionsHelper.checkCondition(widget.uppercaseCharCount, validator.hasMinUppercase,
+    hasMinUppercaseChar = conditionsHelper.checkCondition(widget.uppercaseCharCount, Validator.hasMinUppercase,
         widget.controller, Strings.uppercase(widget.uppercaseCharCount), hasMinUppercaseChar);
 
-    hasMinNumericChar = conditionsHelper.checkCondition(widget.numericCharCount, validator.hasMinNumericChar,
+    hasMinNumericChar = conditionsHelper.checkCondition(widget.numericCharCount, Validator.hasMinNumericChar,
         widget.controller, Strings.numeric(widget.numericCharCount), hasMinNumericChar);
 
-    hasMinSpecialChar = conditionsHelper.checkCondition(widget.specialCharCount, validator.hasMinSpecialChar,
+    hasMinSpecialChar = conditionsHelper.checkCondition(widget.specialCharCount, Validator.hasMinSpecialChar,
         widget.controller, Strings.special(widget.specialCharCount), hasMinSpecialChar);
 
     /// Checks if all condition are true then call the user callback
@@ -136,11 +132,7 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> with SingleTick
         ),
         SizedBox(height: 4),
         if (widget.hideWhileInactive && widget.focusNode != null)
-          SizeTransition(
-            axisAlignment: 1.0,
-            sizeFactor: yAnimation,
-            child: _validation(context)
-          )
+          SizeTransition(axisAlignment: 1.0, sizeFactor: yAnimation, child: _validation(context))
         else
           _validation(context)
       ],
@@ -169,3 +161,27 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> with SingleTick
         }).toList());
   }
 }
+
+typedef PwValidator<T> = String? Function(T? value);
+class PwValidators {
+  static PwValidator<T> validate<T>(
+      BuildContext context,
+      String? errorText, {
+        int minLength = 0,
+        int upper = 0,
+        int numeric = 0,
+        int special = 0,
+      }) => (T? valueCandidate) {
+      if (valueCandidate == null || (valueCandidate is String && valueCandidate.trim().isEmpty)) {
+        return errorText ?? "Invalid";
+      }
+      var vcStr = valueCandidate.toString();
+      var isValid = Validator.hasMinLength(vcStr, minLength) &&
+          Validator.hasMinUppercase(vcStr, upper) &&
+          Validator.hasMinNumericChar(vcStr, numeric) &&
+          Validator.hasMinSpecialChar(vcStr, special);
+
+      return !isValid ? errorText ?? "Invalid" : null;
+    };
+}
+
