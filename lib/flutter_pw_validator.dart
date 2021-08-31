@@ -5,7 +5,6 @@ import 'package:flutter_pw_validator/Utilities/ConditionsHelper.dart';
 import 'package:flutter_pw_validator/Utilities/Validator.dart';
 import 'Components/ValidationBarWidget.dart';
 import 'Components/ValidationTextWidget.dart';
-import 'Utilities/SizeConfig.dart';
 import 'Resource/Strings.dart';
 import 'Resource/MyColors.dart';
 
@@ -52,28 +51,28 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> {
         widget.minLength,
         validator.hasMinLength,
         widget.controller,
-        Strings.AT_LEAST,
+        Strings.min(widget.minLength),
         hasMinLength);
 
     hasMinUppercaseChar = conditionsHelper.checkCondition(
         widget.uppercaseCharCount,
         validator.hasMinUppercase,
         widget.controller,
-        Strings.UPPERCASE_LETTER,
+        Strings.uppercase(widget.uppercaseCharCount),
         hasMinUppercaseChar);
 
     hasMinNumericChar = conditionsHelper.checkCondition(
         widget.numericCharCount,
         validator.hasMinNumericChar,
         widget.controller,
-        Strings.NUMERIC_CHARACTER,
+        Strings.numeric(widget.numericCharCount),
         hasMinNumericChar);
 
     hasMinSpecialChar = conditionsHelper.checkCondition(
         widget.specialCharCount,
         validator.hasMinSpecialChar,
         widget.controller,
-        Strings.SPECIAL_CHARACTER,
+        Strings.special(widget.specialCharCount),
         hasMinSpecialChar);
 
     /// Checks if all condition are true then call the user callback
@@ -144,12 +143,13 @@ class _FlutterPwValidatorState extends State<FlutterPwValidator> {
               //Iterate through the condition map entries and generate new ValidationTextWidget for each item in Green or Red Color
               children: conditionsHelper.getter()!.entries.map((entry) {
                 int? value;
-                if (entry.key == Strings.AT_LEAST) value = widget.minLength;
-                if (entry.key == Strings.UPPERCASE_LETTER)
+                if (entry.key.contains(Strings.AT_LEAST))
+                  value = widget.minLength;
+                if (entry.key.contains(Strings.UPPERCASE_LETTER))
                   value = widget.uppercaseCharCount;
-                if (entry.key == Strings.NUMERIC_CHARACTER)
+                if (entry.key.contains(Strings.NUMERIC_CHARACTER))
                   value = widget.numericCharCount;
-                if (entry.key == Strings.SPECIAL_CHARACTER)
+                if (entry.key.contains(Strings.SPECIAL_CHARACTER))
                   value = widget.specialCharCount;
                 return ValidationTextWidget(
                   color: isFirstRun
